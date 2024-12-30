@@ -53,7 +53,7 @@ w_b <- tälj / nämn
 w_e <- 1 - w_b                  
 
 # --------------------------------------------------
-# Optimal Risky Portfolio (ORP) Metrics
+# Optimal Risky Portfolio (ORP)
 # --------------------------------------------------
 er_orp <- w_b * er_b + w_e * er_e
 var_orp <- (w_b^2 * var_b) + (w_e^2 * var_e) + (2 * w_b * w_e * cov_be)
@@ -61,7 +61,7 @@ sd_orp <- sqrt(var_orp)
 sharpe_orp <- (er_orp - er_rf) / sd_orp
 
 # --------------------------------------------------
-# Optimal Complete Portfolio (OCP) Metrics
+# Optimal Complete Portfolio (OCP)
 # --------------------------------------------------
 set.seed(123)
 risk_aversion <- 7
@@ -73,7 +73,7 @@ sd_ocp <- sqrt((w_rf^2) * var_rf + (w_ocp^2) * var_orp)
 sharpe_ocp <- (er_ocp - er_rf)/sd_ocp
 
 # --------------------------------------------------
-# Efficient Frontier ´
+# Efficient Frontier
 # --------------------------------------------------
 weight_b <- seq(0, 1, by = 0.1)
 sd_p <- numeric(length(weight_b))
