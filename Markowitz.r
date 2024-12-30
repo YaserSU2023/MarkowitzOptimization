@@ -3,8 +3,10 @@
 # --------------------------------------------------
 library(tidyverse)
 library(plotly)
+library(gt)
 
-df <- readxl::read_excel("MPT.xlsx", sheet = 1)
+
+df <- readxl::read_excel("VT24.xlsx", sheet = 2)
 
 # --------------------------------------------------
 # Data Wrangle
@@ -125,55 +127,74 @@ orp_ret <- er_ocp * 100
 # --------------------------------------------------
 # Mean-Variance Portfolio
 # --------------------------------------------------
-fig <- plot_ly()
 
-fig <- fig |> 
-  add_lines(x = Opp_set_risk$SD_P,
-            y = Opp_set_risk$Ret_P, 
-            name = "Opportunity Set", 
-            line = list(color = 'red')) |> 
-  add_markers(x = Opp_set_risk$SD_P,
-              y = Opp_set_risk$Ret_P, 
-              name = "Opportunity Set Points",
-              showlegend = FALSE,
-              marker = list(color = 'red'))
-
-fig <- fig |> 
-  add_lines(x = cml$P.stdev.,  
-            y = cml$P.return., 
-            name = "CML", 
-            line = list(color = 'blue')) |> 
-  add_markers(x = cml$P.stdev.,  
-              y = cml$P.return., 
-              name = "CML Points", 
-              showlegend = FALSE,
-              marker = list(color = 'blue'))
-
-fig <- fig |> 
-  add_lines(x = utility_df$P.stdev.,  
-            y = utility_df$P.return., 
-            name = "Utility Curve", 
-            line = list(color = 'green')) |> 
-  add_markers(x = utility_df$P.stdev.,  
-              y = utility_df$P.return., 
-              name = "Utility Curve Points",
-              showlegend = FALSE,
-              marker = list(color = 'green'))
-
-fig <- fig |> 
-  add_markers(x = orp_sd, 
-              y = orp_ret, 
-              name = "Optimal Risky Portfolio (ORP)", 
-              marker = list(color = 'black', symbol = 'circle', size = 10))
-
-fig <- fig |> 
+fig <- plot_ly() |> 
+  # Opportunity Set
+  add_lines(
+    x = Opp_set_risk$SD_P, y = Opp_set_risk$Ret_P, 
+    name = "Opportunity Set", 
+    line = list(color = 'red')
+  ) |> 
+  add_markers(
+    x = Opp_set_risk$SD_P, y = Opp_set_risk$Ret_P, 
+    name = "Opportunity Set Points", 
+    showlegend = FALSE, 
+    marker = list(color = 'red')
+  ) |> 
+  # Capital Market Line (CML)
+  add_lines(
+    x = cml$P.stdev., y = cml$P.return., 
+    name = "CML", 
+    line = list(color = 'blue')
+  ) |> 
+  add_markers(
+    x = cml$P.stdev., y = cml$P.return., 
+    name = "CML Points", 
+    showlegend = FALSE, 
+    marker = list(color = 'blue')
+  ) |> 
+  # Utility Curve
+  add_lines(
+    x = utility_df$P.stdev., y = utility_df$P.return., 
+    name = "Utility Curve", 
+    line = list(color = 'green')
+  ) |> 
+  add_markers(
+    x = utility_df$P.stdev., y = utility_df$P.return., 
+    name = "Utility Curve Points", 
+    showlegend = FALSE, 
+    marker = list(color = 'green')
+  ) |> 
+  # Optimal Risky Portfolio (ORP)
+  add_markers(
+    x = round(orp_sd, 2), y = round(orp_ret, 2), 
+    name = "Optimal Risky Portfolio (ORP)", 
+    marker = list(color = 'black', symbol = 'circle', size = 10)
+  ) |> 
+  # Layout & Annotations
   layout(
     title = "Markowitz Portfolio Optimization",
     xaxis = list(title = "Standard Deviation (%)"),
     yaxis = list(title = "Return (%)"),
     legend = list(title = list(text = "Legend")),
-    plot_bgcolor = "white",  
-    paper_bgcolor = "white" 
+    plot_bgcolor = "white",
+    paper_bgcolor = "white",
+    annotations = list(
+      x = 0.94, y = 0.07,
+      xref = "paper", yref = "paper",
+      text = paste(
+        "Optimal Complete Portfolio (OCP):",
+        paste0("Expected Return (%): ", round(er_ocp * 100, 2)),
+        paste0("Standard Deviation (%): ", round(sd_ocp * 100, 2)),
+        paste0("Sharpe Ratio: ", round(sharpe_ocp, 4)),
+        paste0("Weight in Risk-Free Asset (%): ", round(w_rf * 100, 2)),
+        paste0("Weight in Risky Portfolio (%): ", round(w_ocp * 100, 2)),
+        sep = "\n"
+      ),
+      showarrow = FALSE,
+      font = list(size = 12, color = "black"),
+      align = "left"
+    )
   )
 
 fig
