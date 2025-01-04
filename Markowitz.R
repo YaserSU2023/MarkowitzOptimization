@@ -3,7 +3,6 @@
 # --------------------------------------------------
 library(tidyverse)
 library(plotly)
-library(gt)
 
 
 df <- readxl::read_excel("MPT.xlsx", sheet = 1)
